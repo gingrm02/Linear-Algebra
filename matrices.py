@@ -96,7 +96,8 @@ class Matrix:
                 self.matrix[row][i] = int(self.matrix[row][i])
     
     def get_column(self,col):
-            column = []
-            for row in self.matrix:
-                column.append(row[col])
-            return column
+        """Returns all numbers in the specified column as a list."""
+        column = []
+        for row in self.matrix:
+            column.append(row[col])
+        return column
