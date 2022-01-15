@@ -142,3 +142,4 @@ class Matrix:
         """Returns the row as a list"""
         return self._matrix[row]
     #end get_row
+#end class Matrix
