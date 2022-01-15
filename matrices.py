@@ -65,8 +65,8 @@ class Matrix:
         else:
             raise ValueError
         
-        self._rows = len(self.matrix)
-        self._columns = len(self.matrix[0])
+        self._rows = len(self._matrix)
+        self._columns = len(self._matrix[0])
     #end constructor
 
     def elem(self, i, j):
@@ -87,7 +87,7 @@ class Matrix:
     def swap_row(self, i, j):
         """swaps row i with row j"""
         temp_row = self._matrix[i]
-        self._matrix[i] = self.matrix[j]
+        self._matrix[i] = self._matrix[j]
         self._matrix[j] = temp_row
     #end swap_row
 
@@ -105,7 +105,7 @@ class Matrix:
         """Multiplies source row by k then adds to destination row"""
         temp_row = []
 
-        for i in range(self.rows()):
+        for i in range(self.columns()):
             temp_row.append(self.elem(source_row, i) * k + self.elem(dest_row, i))
 
         self._matrix[dest_row] = temp_row
@@ -142,4 +142,33 @@ class Matrix:
         """Returns the row as a list"""
         return self._matrix[row]
     #end get_row
+
+    def gaussian_reduction(self):
+        current_row = 0
+        current_column = 0
+
+        while current_column < self.columns() and current_row < self.rows():
+            working_column = self.get_column(current_column)[current_row:]
+
+            #skip column if it is already zeroed
+            if working_column == [0] * (self.rows() - current_row):
+                current_column += 1
+                continue
+            
+            #swap the top row with one that has a non-zero value in the current column
+            for i in range(len(working_column)):
+                if working_column[i] != 0:
+                    self.swap_row(current_row + i, current_row)
+                    break
+            
+            #scale the top row to get a leading 1
+            self.scale_row(current_row, 1 / self.get_row(current_row)[current_column])
+
+            #apply subtractions to lower rows to get zeroes below the new leading 1
+            for i in range(current_row + 1, self.rows()):
+                self.add_rows(current_row, i, -self.get_row(i)[current_column])
+            
+            current_column += 1
+            current_row += 1
+    #end gaussian reducion
 #end class Matrix
