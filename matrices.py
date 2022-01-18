@@ -1,55 +1,3 @@
-def add(matrix_a, matrix_b):
-    """Returns a new matrix that is the sum of the provided matrices"""
-    if matrix_a.rows() != matrix_b.rows() or matrix_a.columns() != matrix_b.columns():
-        raise ValueError("Matrix A and B must have identical dimensions")
-
-    new_matrix = []
-
-    for i in range(matrix_a.rows()):
-        new_matrix.append([])
-        for j in range(matrix_a.columns()):
-            new_matrix[i].append(matrix_a.elem(i,j) + matrix_b.elem(i,j))
-    
-    return Matrix(new_matrix)
-#end add
-
-def scale(matrix, k):
-    """Return a new matrix that is scaled from the original by k"""
-    new_matrix = []
-    for i in range(matrix.rows()):
-        new_matrix.append([])
-        for j in range(matrix.columns()):
-            new_matrix[i].append(matrix.elem(i,j) * k)
-    
-    return Matrix(new_matrix)
-#end scale
-
-def multiply(matrix_a,matrix_b):       
-    def multiply_list_items(*args):
-        """Multiplies two lists item by item, returning the resulting list"""
-        output_list = []
-        for i in range(len(args[0])):
-            output_list.append(args[0][i] * args[1][i])
-        return output_list
-    #end intern multiply_list_items
-
-    """Returns the product of two matrices"""
-    if matrix_a.columns != matrix_b.rows(): 
-        raise ValueError("Matrix A must have as many columns as Matrix B has rows.")
-
-    new_matrix = []
-    for i in range(matrix_a.rows()):
-        new_matrix.append([])
-        for j in range(matrix_b.columns):
-            new_matrix[i].append(
-                sum(
-                    multiply_list_items(
-                        matrix_a.get_row(i), matrix_b.get_column(j)
-                )))
-    
-    return Matrix(new_matrix)
-#end multiply
-
 class Matrix:
     _matrix = None
     _rows = None
@@ -171,4 +119,69 @@ class Matrix:
             current_column += 1
             current_row += 1
     #end gaussian reducion
+
+    def __add__(self, other):
+        """Returns a new matrix that is the sum of the provided matrices"""
+        if self.rows() != other.rows() or self.columns() != other.columns():
+            raise ValueError("Matrix A and B must have identical dimensions")
+
+        new_matrix = []
+
+        for i in range(self.rows()):
+            new_matrix.append([])
+            for j in range(self.columns()):
+                new_matrix[i].append(self.elem(i,j) + other.elem(i,j))
+        
+        return Matrix(new_matrix)
+    #end __add__
+
+    def __sub__(self, other):
+        """Returns a new matrix that is the sum of the provided matrices"""
+        if self.rows() != other.rows() or self.columns() != other.columns():
+            raise ValueError("Matrix A and B must have identical dimensions")
+
+        new_matrix = []
+
+        for i in range(self.rows()):
+            new_matrix.append([])
+            for j in range(self.columns()):
+                new_matrix[i].append(self.elem(i,j) - other.elem(i,j))
+        
+        return Matrix(new_matrix)
+    #end __sub__
+
+    def __mul__(self, other):
+        def multiply_list_items(*args):
+            """Multiplies two lists item by item, returning the resulting list"""
+            output_list = []
+            for i in range(len(args[0])):
+                output_list.append(args[0][i] * args[1][i])
+            return output_list
+        #end intern multiply_list_items
+
+        new_matrix = []
+
+        if type(other) == 'int' or type(other) == 'float':
+            #scalar multiplication
+            for i in range(self.rows()):
+                new_matrix.append([])
+            for j in range(self.columns()):
+                new_matrix[i].append(self.elem(i,j) * other)
+
+            return Matrix(new_matrix)
+        elif self.columns() != other.rows(): 
+            raise ValueError("Matrix A must have as many columns as Matrix B has rows.")
+
+        #matrix multiplication
+        for i in range(self.rows()):
+            new_matrix.append([])
+            for j in range(other.columns()):
+                new_matrix[i].append(
+                    sum(
+                        multiply_list_items(
+                            self.get_row(i), other.get_column(j)
+                    )))
+        
+        return Matrix(new_matrix)
+    #end __mul__
 #end class Matrix
