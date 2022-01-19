@@ -5,7 +5,7 @@ class Matrix:
 
     #constructor
     def __init__(self, array):
-        """Takes a 2d array and stores it as the matrix. Converts 1d array into row vector."""
+        """Takes a 2d array and stores it as the matrix"""
         if type(array[0]) is list:
             self._matrix = array
         elif len(array) == 1:
@@ -16,6 +16,21 @@ class Matrix:
         self._rows = len(self._matrix)
         self._columns = len(self._matrix[0])
     #end constructor
+
+    def from_row(array):
+        """Creates a row vector from a 1d array"""
+        return Matrix([array])
+    #end from_row
+
+    def from_column(array):
+        """Creates a column vector from a 1d array"""
+        new_matrix = []
+
+        for item in array:
+            new_matrix.append([item])
+
+        return Matrix(new_matrix)
+    #end from_column
 
     def elem(self, i, j):
         """Retrieves the element at i x j from the matrix"""
@@ -120,6 +135,26 @@ class Matrix:
             current_row += 1
     #end gaussian reducion
 
+    def transpose(self):
+        new_matrix = []
+
+        for i in range(self.columns()):
+            new_matrix.append(self.get_column(i))
+        
+        return Matrix(new_matrix)
+    #end transpose
+
+    def trace(self):
+        if self.rows() != self.columns():
+            raise ValueError("Matrix must be square.")
+        
+        output = 0
+        for i in range(self.rows()):
+            output += self.elem(i,i)
+        
+        return output
+    #end trace
+
     def __add__(self, other):
         """Returns a new matrix that is the sum of the provided matrices"""
         if self.rows() != other.rows() or self.columns() != other.columns():
@@ -151,22 +186,14 @@ class Matrix:
     #end __sub__
 
     def __mul__(self, other):
-        def multiply_list_items(*args):
-            """Multiplies two lists item by item, returning the resulting list"""
-            output_list = []
-            for i in range(len(args[0])):
-                output_list.append(args[0][i] * args[1][i])
-            return output_list
-        #end intern multiply_list_items
-
         new_matrix = []
 
-        if type(other) == 'int' or type(other) == 'float':
+        if type(other) == int or type(other) == float:
             #scalar multiplication
             for i in range(self.rows()):
                 new_matrix.append([])
-            for j in range(self.columns()):
-                new_matrix[i].append(self.elem(i,j) * other)
+                for j in range(self.columns()):
+                    new_matrix[i].append(self.elem(i,j) * other)
 
             return Matrix(new_matrix)
         elif self.columns() != other.rows(): 
@@ -176,12 +203,40 @@ class Matrix:
         for i in range(self.rows()):
             new_matrix.append([])
             for j in range(other.columns()):
-                new_matrix[i].append(
-                    sum(
-                        multiply_list_items(
-                            self.get_row(i), other.get_column(j)
-                    )))
+                terms = []
+                for k in range(self.columns()):
+                    terms.append(self.get_row(i)[k] * other.get_column(j)[k])
+                new_matrix[i].append(sum(terms))
         
         return Matrix(new_matrix)
     #end __mul__
+
+    def __eq__(self, other):
+        if self.rows() != other.rows() or self.columns() != other.columns():
+            return False
+
+        for i in range(self.rows()):
+            for j in range(self.columns()):
+                if self.elem(i,j) != other.elem(i,j):
+                    return False
+
+        return True
+    #end __eq__
+
+    def __ne__(self, other):
+        return not self == other
+    #end __ne__
+
+    def __str__(self):
+        output = ""
+
+        for row in self._matrix:
+            output += str(row) + "\n"
+
+        return output[:-1]
+    #end __str__
+
+    def __repr__(self):
+        return str(self._matrix)
+    #end __repr__
 #end class Matrix
