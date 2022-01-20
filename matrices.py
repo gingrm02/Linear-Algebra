@@ -1,3 +1,7 @@
+from multiprocessing.sharedctypes import Value
+from xml.dom import ValidationErr
+
+
 class Matrix:
     _matrix = None
     _rows = None
@@ -171,12 +175,42 @@ class Matrix:
     #end invert
 
     def determinant(self):
+        """Returns the determinant (ad-bc) of the matrix."""
         a = self.elem(0,0)
         b = self.elem(0,1)
         c = self.elem(1,0)
         d = self.elem(1,1)
 
         return a * d - b * c
+    #end determinant
+
+    def zero(size):
+        if size < 1:
+            raise ValueError("Size must be 1 or more")
+        
+        new_matrix = []
+
+        for i in range(size):
+            new_matrix.append([])
+            for _ in range(size):
+                new_matrix[i].append(0)
+        
+        return Matrix(new_matrix)
+    #end zero
+
+    def identity(size):
+        if size < 1:
+            raise ValueError("Size must be 1 or more")
+        
+        new_matrix = []
+
+        for i in range(size):
+            new_matrix.append([])
+            for j in range(size):
+                new_matrix[i].append(int(i == j))
+        
+        return Matrix(new_matrix)
+    #end identity
 
     def __add__(self, other):
         """Returns a new matrix that is the sum of the provided matrices"""
