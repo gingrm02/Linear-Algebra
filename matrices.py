@@ -155,6 +155,29 @@ class Matrix:
         return output
     #end trace
 
+    def invert(self):
+        """Returns the inverted matrix, multiplied by the determinant"""
+        a = self.elem(0,0)
+        b = self.elem(0,1)
+        c = self.elem(1,0)
+        d = self.elem(1,1)
+
+        if self.rows() != 2 or self.columns() != 2:
+            raise ValueError("Matrix must be 2x2 square.")
+        elif self.determinant() == 0:
+            raise ValueError("Determinant is 0.")
+        
+        return Matrix([[d, -b],[-c, a]])
+    #end invert
+
+    def determinant(self):
+        a = self.elem(0,0)
+        b = self.elem(0,1)
+        c = self.elem(1,0)
+        d = self.elem(1,1)
+
+        return a * d - b * c
+
     def __add__(self, other):
         """Returns a new matrix that is the sum of the provided matrices"""
         if self.rows() != other.rows() or self.columns() != other.columns():
