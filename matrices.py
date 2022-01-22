@@ -159,29 +159,37 @@ class Matrix:
         return output
     #end trace
 
-    def invert(self):
+    def is_invertible(self):
+        if self.rows() != 2 or self.columns() != 2 or self.determinant() == 0:
+            return False
+        else:
+            return True
+    #end is_invertible
+
+    def inverse(self):
         """Returns the inverted matrix, multiplied by the determinant"""
+        if not self.is_invertible():
+            raise ValueError("Matrix is not invertible.")
+
         a = self.elem(0,0)
         b = self.elem(0,1)
         c = self.elem(1,0)
         d = self.elem(1,1)
-
-        if self.rows() != 2 or self.columns() != 2:
-            raise ValueError("Matrix must be 2x2 square.")
-        elif self.determinant() == 0:
-            raise ValueError("Determinant is 0.")
         
         return Matrix([[d, -b],[-c, a]])
-    #end invert
+    #end inverse
 
     def determinant(self):
         """Returns the determinant (ad-bc) of the matrix."""
-        a = self.elem(0,0)
-        b = self.elem(0,1)
-        c = self.elem(1,0)
-        d = self.elem(1,1)
+        try:
+            a = self.elem(0,0)
+            b = self.elem(0,1)
+            c = self.elem(1,0)
+            d = self.elem(1,1)
 
-        return a * d - b * c
+            return a * d - b * c
+        except IndexError():
+            raise ValueError("Matrix is not invertible.")
     #end determinant
 
     def zero(size):
