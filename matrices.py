@@ -149,17 +149,22 @@ class Matrix:
                 if working_column[i] != 0:
                     new_matrix.swap_row(current_row + i, current_row)
                     break
-            
-            #scale the top row to get a leading 1
-            new_matrix.scale_row(current_row, 1 / new_matrix.get_row(current_row)[current_column])
 
             #apply subtractions to lower rows to get zeroes below the new leading 1
             for i in range(current_row + 1, new_matrix.rows()):
-                new_matrix.add_rows(current_row, i, -new_matrix.get_row(i)[current_column])
+                new_matrix.add_rows(current_row, i, -new_matrix.elem(i,current_column)/new_matrix.elem(current_row,current_column))
             
             current_column += 1
             current_row += 1
         #end while
+
+        #scale rows to get leading 1's
+        for row in range(new_matrix.rows()):
+            for item in new_matrix.get_row(row):
+                if item == 0: continue
+                elif item != 1: new_matrix.scale_row(row, 1/item)
+                break
+        #end scale rows
         
         return new_matrix
     #end gaussian reducion
