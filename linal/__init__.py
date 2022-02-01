@@ -249,15 +249,16 @@ class Matrix:
         return a * d - b * c
     #end determinant
 
-    def zero(size):
-        if size < 1:
-            raise ValueError("Size must be 1 or more")
+    def zero(val_rows, val_coulmns=None):
+        if val_coulmns is None: val_coulmns = val_rows
+        if val_rows < 1 or val_coulmns < 1:
+            raise ValueError("Dimensions must be 1 or more")
         
         new_matrix = []
 
-        for i in range(size):
+        for i in range(val_rows):
             new_matrix.append([])
-            for _ in range(size):
+            for _ in range(val_coulmns):
                 new_matrix[i].append(0)
         
         return Matrix(new_matrix)
