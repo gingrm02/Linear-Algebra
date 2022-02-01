@@ -1,3 +1,5 @@
+from math import pow
+
 class Matrix:
     _matrix = None
     _rows = None
@@ -236,17 +238,39 @@ class Matrix:
         return Matrix(new_matrix).transpose()
     #end inverse
 
+    def minor(self, row, column):
+        """Returns the matrix after removing row and column"""
+        new_matrix = []
+
+        for i in range(self.rows()):
+            if i == row: continue
+            new_matrix.append([])
+            for j in range(self.columns()):
+                if j == column: continue
+                new_matrix[len(new_matrix) - 1].append(self.elem(i, j))
+        
+        return Matrix(new_matrix)
+    #end minor
+
+    def cofactor(self, i, j):
+        """Returns the cofactor of row i and column j."""
+        return pow(-1, i + j) * self.minor(i, j).determinant()
+    #end cofactor
+
     def determinant(self):
-        """Returns the determinant (ad-bc) of the matrix."""
-        if self.rows() != 2 or self.columns != 2:
-            raise ValueError("Matrix must be 2x2")
+        """Returns the determinant of the matrix by cofactor expansion"""
+        print(self)
+        if self.rows() != self.columns():
+            raise ValueError("Matrix must be square")
 
-        a = self.elem(0,0)
-        b = self.elem(0,1)
-        c = self.elem(1,0)
-        d = self.elem(1,1)
+        if self.rows() == 1: return self.elem(0, 0)
+        
+        det = 0
 
-        return a * d - b * c
+        for i in range(len(self.get_row(0))):
+            det += self.elem(0,i) * self.cofactor(0, i)
+
+        return det
     #end determinant
 
     def zero(val_rows, val_coulmns=None):
