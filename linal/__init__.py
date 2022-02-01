@@ -231,6 +231,8 @@ class Matrix:
             .transpose()"""
         if self.rows() != self.columns():
             raise ValueError("Matrix must be square")
+        if self.determinant() == 0:
+            raise ValueError("Determinant must be non-zero")
 
         new_matrix = self.augment(Matrix.identity(self.rows())) \
             .gauss_jordan() \
@@ -259,7 +261,6 @@ class Matrix:
 
     def determinant(self):
         """Returns the determinant of the matrix by cofactor expansion"""
-        print(self)
         if self.rows() != self.columns():
             raise ValueError("Matrix must be square")
 
