@@ -73,23 +73,13 @@ class Matrix:
 
     def scale_row(self, row, k):
         """scales the row by k"""
-        temp_row = []
-
-        for i in self._matrix[row]:
-            temp_row.append(i * k)
-
-        self._matrix[row] = temp_row
+        self._matrix[row] = list(map(lambda x: x*k, self._matrix[row]))
         return self
     #end scale_row
 
     def add_rows(self, source_row, dest_row, k=1):
         """Multiplies source row by k then adds to destination row"""
-        temp_row = []
-
-        for i in range(self.columns()):
-            temp_row.append(self.elem(source_row, i) * k + self.elem(dest_row, i))
-
-        self._matrix[dest_row] = temp_row
+        self._matrix[dest_row] = list(map(lambda s, d: d+s*k, self._matrix[source_row], self._matrix[dest_row]))
         return self
     #end add_rows
     
@@ -216,28 +206,15 @@ class Matrix:
     #end trace
 
     def is_invertible(self):
-        if self.rows() != 2 or self.columns() != 2 or self.determinant() == 0:
-            return False
-        else:
-            return True
+        return (self.rows() == self.columns()) and self.determinant() != 0
     #end is_invertible
 
     def inverse(self):
-        """Returns the inverted matrix. Same as calling 
-            Matrix(
-                self.augment(Matrix.identity(self.rows))
-                .gauss_jordan()
-                .get_columns(self.rows(),2 * self.rows()))
-            .transpose()"""
-        if self.rows() != self.columns():
-            raise ValueError("Matrix must be square")
-        if self.determinant() == 0:
-            raise ValueError("Determinant must be non-zero")
-
-        new_matrix = self.augment(Matrix.identity(self.rows())) \
-            .gauss_jordan() \
-            .get_columns(self.rows(), 2 * self.rows())
-        return Matrix(new_matrix).transpose()
+        """Returns the inverted matrix"""
+        if not self.is_invertible():
+            raise ValueError("Matrix is not invertible.")
+        
+        return self.adjoint() * (1 / self.determinant())
     #end inverse
 
     def minor(self, row, column):
@@ -258,6 +235,17 @@ class Matrix:
         """Returns the cofactor of row i and column j."""
         return pow(-1, i + j) * self.minor(i, j).determinant()
     #end cofactor
+
+    def adjoint(self):
+        new_matrix = []
+
+        for i in range(self.rows()):
+            new_matrix.append([])
+            for j in range(self.columns()):
+                new_matrix[i].append(self.cofactor(j, i))
+        
+        return Matrix(new_matrix)
+    #end adjoint
 
     def determinant(self):
         """Returns the determinant of the matrix by cofactor expansion"""
