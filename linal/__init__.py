@@ -1,4 +1,4 @@
-from math import pow
+import math
 
 class Matrix:
     _matrix = None
@@ -233,7 +233,7 @@ class Matrix:
 
     def cofactor(self, i, j):
         """Returns the cofactor of row i and column j."""
-        return pow(-1, i + j) * self.minor(i, j).determinant()
+        return math.pow(-1, i + j) * self.minor(i, j).determinant()
     #end cofactor
 
     def adjoint(self):
@@ -376,3 +376,30 @@ class Matrix:
         return str(self._matrix)
     #end __repr__
 #end class Matrix
+
+class Vector(Matrix):
+    def __init__(self, *vargs):
+        super().__init__([list(vargs)])
+    # end __init__
+
+    def norm(self):
+        result = 0
+
+        for v in self._matrix[0]:
+            result += v**2
+        
+        return math.sqrt(result)
+    # end norm
+
+    def unit(self):
+        return self * (1/self.norm())
+    # end unit
+
+    def __mul__(self, other):
+        return super().__mul__(other.transpose())._matrix[0][0]
+    #end __mul__
+
+    def angle(self, other):
+        return math.acos((self*other)/(self.norm()*other.norm()))
+    # end angle
+# end class Vector
